@@ -1,0 +1,41 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <h2>EkubCircle</h2>
+      <span class="badge organizer-badge">Organizer Portal</span>
+    </div>
+    <a routerLink="/organizer/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+  </header>
+
+  <div class="form-card">
+    <h3>Add New Circle Member</h3>
+    <p class="text-muted">Register a participant to join your Ekub circle ecosystem.</p>
+
+    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+    <form (ngSubmit)="onSubmit()" #memberForm="ngForm">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="name" name="name" required #nameField="ngModel" class="form-control" placeholder="Enter full name" />
+        <div *ngIf="nameField.invalid && nameField.touched" class="error-text">Name is required.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="email" name="email" required email #emailField="ngModel" class="form-control" placeholder="name@example.com" />
+        <div *ngIf="emailField.invalid && emailField.touched" class="error-text">A valid email is required.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Temporary Password</label>
+        <input type="password" [(ngModel)]="temporaryPassword" name="temporaryPassword" required minlength="6" #passField="ngModel" class="form-control" placeholder="Enter temporary password" />
+        <div *ngIf="passField.invalid && passField.touched" class="error-text">Password must be at least 6 characters.</div>
+      </div>
+
+      <button type="submit" [disabled]="memberForm.invalid || isLoading" class="btn btn-primary">
+        {{ isLoading ? 'Creating...' : 'Add Member' }}
+      </button>
+    </form>
+  </div>
+</div>

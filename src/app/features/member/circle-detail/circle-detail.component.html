@@ -1,0 +1,104 @@
+<div class="dashboard-container">
+  <!-- Top Navigation Bar -->
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <h2>EkubCircle</h2>
+      <span class="badge member-badge">Member Portal</span>
+    </div>
+    <a routerLink="/member/home" class="btn btn-secondary">← Back to Home</a>
+  </header>
+
+  <!-- Circle Summary Banner -->
+  <div class="card circle-banner">
+    <div>
+      <h2>{{ circleData.name }}</h2>
+      <p class="text-muted">
+        Contribution: <strong>{{ circleData.contribution | number }} ETB</strong> • 
+        Current Round: <strong>{{ circleData.currentRound }}</strong> • 
+        Members: <strong>{{ circleData.totalMembers }}</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- Member Status Grid -->
+  <div class="status-grid">
+    <!-- My Payment Status -->
+    <div class="card">
+      <h3>My Payment</h3>
+      <div class="status-display" [ngClass]="circleData.myPaymentStatus === 'Paid' ? 'status-success' : 'status-danger'">
+        {{ circleData.myPaymentStatus }}
+      </div>
+    </div>
+
+    <!-- My Pot Status -->
+    <div class="card">
+      <h3>My Pot Status</h3>
+      <div class="status-display" [ngClass]="circleData.myPotStatus === 'Already Received' ? 'status-success' : 'status-neutral'">
+        {{ circleData.myPotStatus }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Round Card -->
+  <div class="card">
+    <h3>Current Round Info</h3>
+    <div class="round-box">
+      <div>
+        <span class="label">Round Number</span>
+        <div class="value">Round {{ circleData.currentRoundDetails.roundNumber }}</div>
+      </div>
+      <div>
+        <span class="label">Assigned Receiver</span>
+        <div class="value">{{ circleData.currentRoundDetails.receiver }}</div>
+      </div>
+      <div>
+        <span class="label">Current Pot Total</span>
+        <div class="value text-primary">{{ circleData.currentRoundDetails.currentPot | number }} ETB</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Circle Members & Status -->
+  <div class="card">
+    <h3>Circle Members</h3>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Member Name</th>
+            <th>Received Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let member of circleData.members">
+            <td><strong>{{ member.name }}</strong></td>
+            <td><span class="badge-status">{{ member.receivedStatus }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Past Rounds History -->
+  <div class="card">
+    <h3>Past Rounds History</h3>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Round</th>
+            <th>Receiver</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let round of circleData.pastRounds">
+            <td>Round {{ round.roundNumber }}</td>
+            <td>{{ round.receiver }}</td>
+            <td><span class="badge-success">{{ round.status }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

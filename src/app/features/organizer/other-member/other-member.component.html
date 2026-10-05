@@ -1,0 +1,103 @@
+<div class="app-layout">
+  <!-- Dark Sidebar Theme -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-box">E</span>
+      <div class="logo-text">
+        <h2>EkubCircle</h2>
+        <p>Rotating Savings Ledger</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-title">ACTIVE CIRCLE</div>
+    <div class="active-circle-box">
+      <h4>{{ activeCircle.name }}</h4>
+      <p>4 Members • Active</p>
+      <span class="badge badge-active">Round 2 of 4</span>
+    </div>
+
+    <div class="sidebar-section-title">ORGANIZER NAVIGATION</div>
+    <nav class="sidebar-nav">
+      <a routerLink="/organizer/dashboard" class="nav-item">← Back to Dashboard</a>
+      <a [routerLink]="['/organizer/circles', activeCircle.id]" class="nav-item">Circle Overview</a>
+      <a routerLink="/organizer/circles/1/other-members" class="nav-item active">Manage Other Members</a>
+      <a [routerLink]="['/organizer/circles', activeCircle.id, 'round']" class="nav-item">Live Round Ledger</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="guarantee-text">100% Authoritative Ledger Guarantee | Rotating Savings & Credit Circle | Member Roster Management</span>
+      </div>
+      <div class="top-bar-right">
+        <span class="circle-id-pill">Circle ID: #EKUB-2026-AA</span>
+        <span class="lang-pill">Amharic / EN</span>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Banner Header -->
+      <div class="crimson-banner">
+        <div class="banner-text">
+          <h2>Participant & Member Roster Management</h2>
+          <p>Review, verify, and administer circle participants, contact numbers, and contribution standings.</p>
+        </div>
+        <div class="banner-actions">
+          <button (click)="addMemberModal()" class="btn btn-primary-light">+ Add New Member</button>
+        </div>
+      </div>
+
+      <!-- Members Table (Rows and Columns) -->
+      <div class="table-card">
+        <div class="table-header-flex">
+          <div>
+            <h3>Active Circle Members Directory</h3>
+            <p class="text-muted">Detailed rows and columns view of all registered participants and their current cycle progression.</p>
+          </div>
+        </div>
+
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>MEMBER NAME</th>
+              <th>ROLE / CONTACT</th>
+              <th>CONTRIBUTION STATUS</th>
+              <th>POT WIN STATUS</th>
+              <th>ORGANIZER ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of circleMembers">
+              <td><strong>{{ m.id }}</strong></td>
+              <td>
+                <span class="member-name">{{ m.name }}</span>
+              </td>
+              <td>
+                <div class="sub-text"><strong>{{ m.role }}</strong></div>
+                <div class="sub-contact">{{ m.contact }}</div>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="m.contributionStatus.includes('PAID') ? 'badge-success' : 'badge-warning'">
+                  [{{ m.contributionStatus }}]
+                </span>
+              </td>
+              <td><span class="pot-highlight">{{ m.potStatus }}</span></td>
+              <td>
+                <button *ngIf="m.contributionStatus.includes('UNPAID')" (click)="verifyPayment(m)" class="btn btn-sm btn-verify">Verify Cash</button>
+                <span *ngIf="!m.contributionStatus.includes('UNPAID')" class="verified-text">✔️ Verified</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-audit-note">
+        <span>Immutable Audit Invariant: Each member receives the pot at most once.</span>
+        <span>Authorization Level: Host Administrator</span>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,118 @@
+<div class="app-layout">
+  <!-- Dark Sidebar Theme -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-box">E</span>
+      <div class="logo-text">
+        <h2>EkubCircle</h2>
+        <p>Rotating Savings Ledger</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section-title">ACTIVE CIRCLE</div>
+    <div class="active-circle-box">
+      <h4>Tech Colleagues Ekub</h4>
+      <p>2,000 ETB / Week • 4 Members</p>
+      <span class="badge badge-active">Status: ACTIVE (Round 2 of 4)</span>
+    </div>
+
+    <div class="sidebar-section-title">ORGANIZER NAVIGATION</div>
+    <nav class="sidebar-nav">
+      <a routerLink="/organizer/circles/1" class="nav-item">Circle Overview</a>
+      <a routerLink="/organizer/circles/1/add-member" class="nav-item">Add Member & Roster</a>
+      <a routerLink="/organizer/circles/1/round" class="nav-item">Live Round Ledger</a>
+      <a routerLink="/organizer/circles/1/history" class="nav-item active">Historical Winners</a>
+      <a routerLink="/organizer/dashboard" class="nav-item">Dashboard Home</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Global Bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <span class="guarantee-text">100% Authoritative Ledger Guarantee | Rotating Savings & Credit Circle | Zero Bank Fees (Record Book Only)</span>
+      </div>
+      <div class="top-bar-right">
+        <span class="circle-id-pill">Circle ID: #EKUB-2026-AA</span>
+        <span class="lang-pill">Amharic / EN</span>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Search & Total Rotated Header -->
+      <div class="header-action-row">
+        <div class="search-box">
+          <input type="text" placeholder="Filter history by winner name, round #, or date..." class="form-control" />
+          <button class="btn btn-search">Search</button>
+        </div>
+        <div class="total-rotated-card">
+          <span class="label">TOTAL ROTATED</span>
+          <span class="value">32,000 ETB</span>
+        </div>
+      </div>
+
+      <!-- Crimson Banner Card -->
+      <div class="crimson-banner">
+        <div class="banner-text">
+          <h2>Round History & Historical Pot Distributions</h2>
+          <p>Circle: Tech Colleagues Ekub · Cadence: Weekly · Per Round Pot: 8,000 ETB · Status: Active (Round 2)</p>
+          <p class="rule-text">Server Rule: Members who already received the pot remain obligated to pay all subsequent rounds.</p>
+        </div>
+        <button class="btn btn-export">EXPORT AUDIT CSV / JSON</button>
+      </div>
+
+      <!-- Filter Rounds Bar -->
+      <div class="filter-rounds-bar">
+        <span class="filter-label">FILTER ROUNDS:</span>
+        <button class="filter-pill" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All Rounds (4)</button>
+        <button class="filter-pill" [class.active]="activeFilter === 'paid'" (click)="setFilter('paid')">Paid Out (1)</button>
+        <button class="filter-pill" [class.active]="activeFilter === 'progress'" (click)="setFilter('progress')">In Progress / Open (1)</button>
+        <button class="filter-pill" [class.active]="activeFilter === 'scheduled'" (click)="setFilter('scheduled')">Scheduled / Upcoming (2)</button>
+        <span class="sort-text">Sort: Sequential Order (1–4)</span>
+        <span class="showing-text">Showing 4 of 4 Rounds</span>
+      </div>
+
+      <!-- Data Table Card -->
+      <div class="table-card">
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>ROUND</th>
+              <th>POT RECIPIENT (MEMBER)</th>
+              <th>POT AMOUNT</th>
+              <th>DISBURSAL DATE</th>
+              <th>COLLECTION AUDIT</th>
+              <th>ROUND STATUS</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of roundsData">
+              <td><span class="round-badge">Round {{ r.roundNumber }}</span></td>
+              <td>
+                <div class="recipient-info">
+                  <strong>{{ r.recipientName }}</strong>
+                  <span class="sub-email">{{ r.recipientEmail }}</span>
+                </div>
+              </td>
+              <td><strong>{{ r.potAmount }}</strong></td>
+              <td>{{ r.disbursalDate }}</td>
+              <td>{{ r.collectionAudit }}</td>
+              <td><span class="badge" [ngClass]="r.statusClass">{{ r.status }}</span></td>
+              <td>
+                <button class="btn-action-link">View Receipt /</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Audit Note -->
+      <div class="footer-audit-note">
+        <span>Immutable Audit Invariant: Each member receives the pot at most once (Single Pot Win Rule).</span>
+        <span>Circle Completion: 25% (1 of 4 Rounds Paid Out)</span>
+      </div>
+    </div>
+  </main>
+</div>

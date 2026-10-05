@@ -1,0 +1,121 @@
+@use "sass:color";
+
+/* ==========================================
+   EkubCircle Global SCSS Stylesheet
+   ================================---------- */
+
+/* Design Tokens & Variables */
+$primary-color: #4f46e5;
+$primary-hover: #4338ca;
+$secondary-color: #06b6d4;
+$background-color: #f8fafc;
+$card-background: #ffffff;
+$text-main: #1e293b;
+$text-muted: #64748b;
+$border-color: #cbd5e1;
+$danger-color: #ef4444;
+$success-color: #22c55e;
+$radius: 10px;
+
+/* Base Resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+  background-color: $background-color;
+  color: $text-main;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Global Layout Containers */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Reusable Form Controls */
+.form-group {
+  margin-bottom: 18px;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 0.875rem;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid $border-color;
+    border-radius: $radius;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+    background-color: #fff;
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+  }
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  background-color: $primary-color;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: $radius;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  text-align: center;
+
+  &:hover {
+    background-color: $primary-hover;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &-danger {
+    background-color: $danger-color;
+    &:hover { 
+      background-color: color.adjust($danger-color, $lightness: -10%); 
+    }
+  }
+}
+
+/* Alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: $radius;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+
+  &-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+  }
+
+  &-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #4ade80;
+  }
+}

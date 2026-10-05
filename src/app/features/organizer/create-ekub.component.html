@@ -1,0 +1,62 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <h2>EkubCircle</h2>
+      <span class="badge organizer-badge">Organizer Portal</span>
+    </div>
+    <a routerLink="/organizer/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+  </header>
+
+  <div class="form-card">
+    <h3>Create a New Ekub Circle</h3>
+    <p class="text-muted">Set up the parameters for a new savings circle.</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Ekub Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="ekubName" 
+          name="ekubName" 
+          required 
+          class="form-control" 
+          placeholder="e.g. Neighborhood Savings" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Contribution Amount (ETB)</label>
+        <input 
+          type="number" 
+          [(ngModel)]="amount" 
+          name="amount" 
+          required 
+          class="form-control" 
+          placeholder="e.g. 1000" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Contribution Frequency</label>
+        <select [(ngModel)]="frequency" name="frequency" class="form-control">
+          <option value="Weekly">Weekly</option>
+          <option value="Monthly">Monthly</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Max Members Limit</label>
+        <input 
+          type="number" 
+          [(ngModel)]="maxMembers" 
+          name="maxMembers" 
+          required 
+          class="form-control" 
+          placeholder="e.g. 10" 
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Create Circle</button>
+    </form>
+  </div>
+</div>

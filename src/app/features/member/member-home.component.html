@@ -1,0 +1,56 @@
+<div class="dashboard-container">
+  <!-- Top Navigation Bar -->
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <h2>EkubCircle</h2>
+      <span class="badge">Member Portal</span>
+    </div>
+    <div class="user-actions">
+      <span>Welcome, <strong>{{ memberName }}</strong></span>
+      <a routerLink="/member/change-password" class="btn btn-secondary">Change Password</a>
+      <button (click)="logout()" class="btn btn-danger">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main Content Grid -->
+  <div class="dashboard-grid">
+    <!-- Active Ekubs Card -->
+    <div class="card">
+      <h3>My Active Ekubs</h3>
+      <p class="text-muted">You are currently participating in 2 active circles.</p>
+      
+      <div class="ekub-list">
+        <div class="ekub-item">
+          <div>
+            <h4>Monthly Family Ekub</h4>
+            <p>Contribution: 2,000 ETB / month</p>
+          </div>
+          <span class="status-active">Active</span>
+        </div>
+        
+        <div class="ekub-item">
+          <div>
+            <h4>Office Colleagues Circle</h4>
+            <p>Contribution: 500 ETB / week</p>
+          </div>
+          <span class="status-active">Active</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats / Overview Card -->
+    <div class="card">
+      <h3>Contribution Summary</h3>
+      <div class="stats-box">
+        <div class="stat-item">
+          <span class="label">Total Contributed</span>
+          <span class="value">14,000 ETB</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Next Payout Turn</span>
+          <span class="value">Nov 15, 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
