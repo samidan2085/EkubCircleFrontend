@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.services';
@@ -38,12 +39,12 @@ export class RegisterComponent {
       password: this.registerForm.value.password
     };
 
-    this.authService.register(payload).subscribe({
+    this.authService.registerUser(payload).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate(['/login']);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.loading = false;
         this.errorMessage = err.error?.message || 'Registration failed. Please check your details.';
       }

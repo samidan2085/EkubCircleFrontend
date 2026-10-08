@@ -1,246 +1,422 @@
-.app-layout {
-  display: flex;
+.dashboard {
   min-height: 100vh;
-  background-color: #061c12;
-  font-family: system-ui, -apple-system, sans-serif;
+  padding: 30px;
+  background: #f5f7fb;
+  color: #1f2937;
 }
 
-/* Sidebar Styling */
-.sidebar {
-  width: 280px;
-  background-color: #061c12;
-  color: #fff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+/* =========================
+   Header
+========================= */
 
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 6px;
-    .logo-box {
-      background: #10b981;
-      color: #061c12;
-      font-weight: 800;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-    }
-    .logo-text {
-      h2 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #fff; }
-      p { font-size: 0.7rem; color: #94a3b8; margin: 0; }
-    }
-  }
-
-  .sidebar-section-title {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #64748b;
-    letter-spacing: 0.05em;
-    margin-top: 6px;
-  }
-
-  .active-circle-box {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
-    border-radius: 8px;
-    h4 { font-size: 0.9rem; margin: 0 0 4px 0; color: #f8fafc; }
-    p { font-size: 0.75rem; color: #94a3b8; margin: 0 0 8px 0; }
-    .badge-active { background: #064e3b; color: #34d399; font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: 600; display: inline-block; }
-  }
-
-  .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    .nav-item {
-      padding: 10px 12px;
-      color: #cbd5e1;
-      text-decoration: none;
-      font-size: 0.85rem;
-      border-radius: 6px;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      text-align: left;
-      display: block;
-      width: 100%;
-      &:hover {
-        background: rgba(16, 185, 129, 0.2);
-        color: #34d399;
-      }
-      &.highlight-btn {
-        background: #10b981;
-        color: #061c12;
-        font-weight: 700;
-        margin-top: 6px;
-        text-align: center;
-        &:hover { background: #059669; color: #fff; }
-      }
-    }
-  }
-}
-
-/* Main Content Area */
-.main-content {
-  flex: 1;
-  background-color: #091e14;
-  display: flex;
-  flex-direction: column;
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
-  overflow: hidden;
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-
-  .top-bar {
-    background: #061c12;
-    color: #94a3b8;
-    padding: 10px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    .top-bar-right {
-      display: flex;
-      gap: 12px;
-      .circle-id-pill, .lang-pill { background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px; color: #fff; }
-    }
-  }
-
-  .content-body {
-    padding: 24px;
-    overflow-y: auto;
-  }
-}
-
-/* Crimson Banner */
-.crimson-banner {
-  background: #581c25;
-  color: #fff;
-  padding: 24px;
-  border-radius: 12px;
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 25px;
 
-  .banner-text {
-    h2 { font-size: 1.25rem; font-weight: 700; margin: 0 0 6px 0; }
-    p { font-size: 0.85rem; color: #fca5a5; margin: 0 0 4px 0; }
-    .rule-text { font-size: 0.75rem; color: #fecaca; font-style: italic; }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    font-weight: 700;
   }
 
-  .banner-actions {
-    display: flex;
-    gap: 10px;
-    .btn-primary-light { 
-      background: #ffffff; 
-      color: #581c25; 
-      text-decoration: none; 
-      padding: 10px 16px; 
-      border-radius: 6px; 
-      font-weight: 700; 
-      font-size: 0.8rem; 
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      &:hover { background: #f1f5f9; } 
-    }
-    .btn-export { 
-      background: #10b981; 
-      color: #061c12; 
-      border: none; 
-      padding: 10px 16px; 
-      border-radius: 6px; 
-      font-weight: 700; 
-      font-size: 0.8rem; 
-      cursor: pointer; 
-      &:hover { background: #059669; color: #fff; } 
-    }
+  p {
+    margin: 0;
+    color: #6b7280;
   }
 }
 
-/* Table Card Styling */
-.table-card {
-  background: #0d2818;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+/* =========================
+   Buttons
+========================= */
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.refresh-btn {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+
+  &:hover:not(:disabled) {
+    background: #f3f4f6;
+  }
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
+}
+
+.payment-btn {
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
+}
+
+.payout-btn {
+  background: #16a34a;
+  color: white;
+  padding: 12px 20px;
+
+  &:hover:not(:disabled) {
+    background: #15803d;
+  }
+}
+
+/* =========================
+   Messages
+========================= */
+
+.message {
+  padding: 14px 18px;
   margin-bottom: 20px;
-
-  .table-header-flex {
-    margin-bottom: 16px;
-    h3 { color: #f8fafc; font-size: 1.15rem; margin-bottom: 4px; font-weight: 700; }
-    .text-muted { color: #94a3b8; font-size: 0.85rem; margin: 0; }
-  }
-
-  .audit-table {
-    width: 100%;
-    border-collapse: collapse;
-
-    th, td { 
-      padding: 14px 16px; 
-      text-align: left; 
-      font-size: 0.85rem; 
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06); 
-    }
-
-    th { 
-      background: rgba(0, 0, 0, 0.25); 
-      color: #94a3b8; 
-      font-weight: 700; 
-      font-size: 0.75rem; 
-      letter-spacing: 0.05em; 
-    }
-
-    td { 
-      color: #f8fafc; 
-      vertical-align: middle; 
-      .module-title { font-weight: 600; color: #34d399; }
-    }
-
-    .badge-status { 
-      background: rgba(255, 255, 255, 0.06); 
-      color: #e2e8f0; 
-      padding: 4px 8px; 
-      border-radius: 4px; 
-      font-size: 0.75rem; 
-      font-weight: 600;
-    }
-
-    .btn {
-      text-align: center;
-      text-decoration: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.78rem;
-      cursor: pointer;
-      display: inline-block;
-      border: none;
-
-      &.btn-primary { background: #10b981; color: #061c12; &:hover { background: #059669; color: #fff; } }
-      &.btn-secondary { background: #3b82f6; color: #fff; &:hover { background: #2563eb; } }
-      &.btn-accent { background: #8b5cf6; color: #fff; &:hover { background: #7c3aed; } }
-    }
-  }
+  border-radius: 8px;
+  font-size: 14px;
 }
 
-.footer-audit-note {
+.loading {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+/* =========================
+   Cards
+========================= */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.circle-card {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: #64748b;
-  padding: 0 4px;
+  align-items: center;
+
+  h2 {
+    margin: 5px 0 0;
+    font-size: 24px;
+  }
+}
+
+/* =========================
+   Labels
+========================= */
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status {
+  text-align: right;
+
+  strong {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+  }
+}
+
+/* =========================
+   Statistics
+========================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  strong {
+    display: block;
+    font-size: 22px;
+    margin-top: 5px;
+  }
+}
+
+/* =========================
+   Section Header
+========================= */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 4px 0 0;
+    font-size: 22px;
+  }
+}
+
+.round-status {
+  padding: 7px 14px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================
+   Receiver
+========================= */
+
+.receiver {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+
+  span {
+    color: #4b5563;
+  }
+
+  strong {
+    color: #1d4ed8;
+    font-size: 16px;
+  }
+}
+
+/* =========================
+   Table
+========================= */
+
+.card h3 {
+  margin: 0 0 15px;
+  font-size: 17px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f9fafb;
+}
+
+th {
+  text-align: left;
+  padding: 13px 15px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* =========================
+   Payment Badges
+========================= */
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.unpaid {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* =========================
+   Payout
+========================= */
+
+.payout-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pot {
+  display: block;
+  font-size: 24px;
+  margin-top: 4px;
+}
+
+/* =========================
+   Warning
+========================= */
+
+.warning {
+  margin-top: 15px !important;
+  color: #b45309 !important;
+  font-size: 13px;
+}
+
+/* =========================
+   Round History
+========================= */
+
+.history {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 900px) {
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .dashboard {
+    padding: 18px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .circle-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .status {
+    text-align: left;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .receiver {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .payout-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .payout-btn {
+    width: 100%;
+  }
+
+  .history-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
 }

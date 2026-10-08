@@ -1,32 +1,93 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { LoginRequest, ChangePasswordRequest } from '../models/user.models';
+import { Observable, tap } from 'rxjs';
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  fullName?: string;
+  role?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  role: string;
+  email: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://localhost:5001/api/auth';
 
-  login(credentials: LoginRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials);
+  private apiUrl = 'http://localhost:5034/api/auth';
+
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(
+        `${this.apiUrl}/login`,
+        credentials
+      )
+      .pipe(
+        tap(response => {
+          localStorage.setItem(
+            'accessToken',
+            response.token
+          );
+
+          localStorage.setItem(
+            'userRole',
+            response.role
+          );
+        })
+      );
   }
 
-  register(userData: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, userData);
+  registerUser(
+    userData: RegisterRequest
+  ): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(
+        `${this.apiUrl}/register`,
+        userData
+      )
+      .pipe(
+        tap(response => {
+          if (response.token) {
+            localStorage.setItem(
+              'accessToken',
+              response.token
+            );
+
+            localStorage.setItem(
+              'userRole',
+              response.role
+            );
+          }
+        })
+      );
   }
 
-  changePassword(data: ChangePasswordRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/change-password`, data);
+  logout(): void {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userRole');
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+  getToken(): string | null {
+    return localStorage.getItem('accessToken');
   }
 
-  mustChangePassword(): boolean {
-    return localStorage.getItem('mustChangePassword') === 'true';
+  getRole(): string | null {
+    return localStorage.getItem('userRole');
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 }

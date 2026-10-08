@@ -8,7 +8,7 @@ import { Circle } from '../models/circle.model';
 })
 export class CircleService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://localhost:5001/api/circles';
+  private apiUrl = 'http://localhost:5034/api/circles';
 
   getOrganizerCircles(): Observable<Circle[]> {
     return this.http.get<Circle[]>(this.apiUrl);
@@ -27,14 +27,14 @@ export class CircleService {
   }
 
   recordPayment(roundId: string, memberId: string): Observable<any> {
-    return this.http.post(`https://localhost:5001/api/rounds/${roundId}/payments`, { memberId });
+    return this.http.post(`https://localhost:5034/api/rounds/${roundId}/payments`, { memberId });
   }
 
   triggerPayout(roundId: string): Observable<any> {
-    return this.http.post(`https://localhost:5001/api/rounds/${roundId}/payout`, {});
+    return this.http.post(`https://localhost:5034/api/rounds/${roundId}/payout`, {});
   }
 
   getMemberDashboard(): Observable<any> {
-    return this.http.get('https://localhost:5001/api/member/dashboard');
+    return this.http.get('https://localhost:5034/api/member/dashboard');
   }
 }

@@ -1,23 +1,93 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h2>EkubCircle</h2>
-
-    <form (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">Username (Full Name)</label>
-        <input id="username" type="text" placeholder="e.g. Abebe Kebede" required />
+<div class="ekub-login-container">
+  <div class="login-card">
+    
+    <!-- Left Brand Panel -->
+    <div class="left-brand-panel">
+      <div class="brand-logo-area">
+        <div class="logo-icon"></div>
+        <span class="brand-name">MY EKUB</span>
       </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input id="password" type="password" placeholder="••••••" required />
+      
+      <div class="brand-hero-content">
+        <h1>Transform Your Savings, Together.</h1>
+        <p>Experience the modern digital rotational savings ledger. Manage rounds, track payments securely, and win your future.</p>
+        <div class="badge-pill">Secure & Reliable</div>
       </div>
-
-      <button type="submit" class="btn btn-primary">Sign In</button>
-    </form>
-
-    <div class="auth-footer">
-      Don't have an organizer account? <a routerLink="/register">Register here</a>
     </div>
+
+    <!-- Right Form Panel -->
+    <div class="right-form-panel">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p>Please enter your credentials to access your circle</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        
+        <!-- Email Field -->
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="icon">✉</span>
+            <input 
+              id="email"
+              type="email" 
+              formControlName="email" 
+              placeholder="name@mail.com" 
+              class="form-control"
+            />
+          </div>
+          <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error-text">
+            <small *ngIf="loginForm.get('email')?.errors?.['required']">Email is required.</small>
+            <small *ngIf="loginForm.get('email')?.errors?.['email']">Enter a valid email address.</small>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="input-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <span class="icon">🔒</span>
+            <input 
+              id="password"
+              type="password" 
+              formControlName="password" 
+              placeholder="••••••••••••" 
+              class="form-control"
+            />
+          </div>
+          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error-text">
+            <small *ngIf="loginForm.get('password')?.errors?.['required']">Password is required.</small>
+          </div>
+        </div>
+
+        <!-- Options row -->
+        <div class="form-options">
+          <label class="checkbox-container">
+            <input type="checkbox" /> Remember me
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <!-- Error Alert -->
+        <div *ngIf="errorMessage" class="alert-error">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="btn-login" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Login to Circle</span>
+          <span *ngIf="isLoading">Verifying credentials...</span>
+        </button>
+
+        <!-- Register Section -->
+        <div class="signup-redirect">
+          <span>Not a member yet?</span>
+          <button type="button" class="btn-signup-link">Create Account</button>
+        </div>
+
+      </form>
+    </div>
+
   </div>
 </div>

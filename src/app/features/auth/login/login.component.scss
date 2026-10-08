@@ -1,46 +1,252 @@
-.auth-container {
+.ekub-login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 85vh;
-  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e3a8a 100%);
+  font-family: 'Inter', sans-serif;
+  padding: 1rem;
 
-  .auth-card {
+  .login-card {
+    display: flex;
+    width: 920px;
+    height: 540px;
     background: #ffffff;
-    padding: 36px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
-    width: 100%;
-    max-width: 440px;
-    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 
-    h2 {
-      margin-bottom: 4px;
-      color: #1e293b;
-      font-size: 1.85rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
+    /* Left Brand Panel (My Ekub Theme) */
+    .left-brand-panel {
+      flex: 1;
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .brand-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .logo-icon {
+          width: 28px;
+          height: 28px;
+          background: #ffffff;
+          border-radius: 50%;
+          box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .brand-name {
+          font-weight: 800;
+          font-size: 1rem;
+          letter-spacing: 1.5px;
+        }
+      }
+
+      .brand-hero-content {
+        h1 {
+          font-size: 2.25rem;
+          font-weight: 700;
+          line-height: 1.25;
+          margin-bottom: 1rem;
+        }
+
+        p {
+          font-size: 0.9rem;
+          color: #bfdbfe;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .badge-pill {
+          display: inline-block;
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(4px);
+          padding: 0.35rem 0.85rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+      }
     }
 
-    .subtitle {
-      color: #64748b;
-      margin-bottom: 24px;
-      font-size: 0.95rem;
-    }
+    /* Right Form Panel */
+    .right-form-panel {
+      flex: 1;
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #ffffff;
 
-    .auth-footer {
-      margin-top: 24px;
-      text-align: center;
-      font-size: 0.875rem;
-      color: #64748b;
+      .form-header {
+        margin-bottom: 1.75rem;
 
-      a {
-        color: #4f46e5;
-        text-decoration: none;
+        h2 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 0.25rem;
+        }
+
+        p {
+          font-size: 0.85rem;
+          color: #64748b;
+        }
+      }
+
+      .input-group {
+        margin-bottom: 1.15rem;
+
+        label {
+          display: block;
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #334155;
+          margin-bottom: 0.4rem;
+        }
+
+        .input-wrapper {
+          display: flex;
+          align-items: center;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          background: #f8fafc;
+          padding: 0 0.75rem;
+          transition: all 0.2s ease;
+
+          &:focus-within {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          }
+
+          .icon {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-right: 0.5rem;
+          }
+
+          .form-control {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 0.65rem 0;
+            font-size: 0.9rem;
+            color: #0f172a;
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+
+        .error-text {
+          color: #ef4444;
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+        }
+      }
+
+      .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+
+        .checkbox-container {
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          cursor: pointer;
+        }
+
+        .forgot-password {
+          color: #2563eb;
+          text-decoration: none;
+          font-weight: 500;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .alert-error {
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        padding: 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .btn-login {
+        width: 100%;
+        background: #2563eb;
+        color: #ffffff;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
         font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        margin-bottom: 1.25rem;
 
-        &:hover {
-          text-decoration: underline;
+        &:hover:not(:disabled) {
+          background: #1d4ed8;
+        }
+
+        &:disabled {
+          background: #93c5fd;
+          cursor: not-allowed;
+        }
+      }
+
+      .signup-redirect {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #64748b;
+
+        .btn-signup-link {
+          background: none;
+          border: none;
+          color: #2563eb;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 0;
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }

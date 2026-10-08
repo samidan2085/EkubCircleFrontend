@@ -1,98 +1,433 @@
-<div class="app-layout">
-  <!-- Dark Sidebar Theme -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <span class="logo-box">E</span>
-      <div class="logo-text">
-        <h2>EkubCircle</h2>
-        <p>Rotating Savings Ledger</p>
-      </div>
+<div class="dashboard">
+
+  <div class="header">
+    <div>
+      <h1>Organizer Dashboard</h1>
+
+      <p>
+        Manage your Ekub circle and current round.
+      </p>
     </div>
 
-    <div class="sidebar-section-title">ACTIVE CIRCLE</div>
-    <div class="active-circle-box">
-      <h4>{{ activeCircle.name }}</h4>
-      <p>{{ activeCircle.contribution }} • {{ activeCircle.membersCount }} Members</p>
-      <span class="badge badge-active">Status: {{ activeCircle.status }}</span>
+    <button
+      class="refresh-btn"
+      (click)="loadCircleDetails()">
+
+      Refresh
+    </button>
+  </div>
+
+
+  <!-- Loading -->
+
+  <div
+    class="message loading"
+    *ngIf="isLoading()">
+
+    Loading circle details...
+  </div>
+
+
+  <!-- Error -->
+
+  <div
+    class="message error"
+    *ngIf="errorMessage()">
+
+    {{ errorMessage() }}
+
+  </div>
+
+
+  <!-- Success -->
+
+  <div
+    class="message success"
+    *ngIf="successMessage()">
+
+    {{ successMessage() }}
+
+  </div>
+
+
+  <!-- Dashboard -->
+
+  <ng-container *ngIf="!isLoading() && circle() as c">
+
+    <!-- Circle Information -->
+
+    <div class="card circle-card">
+
+      <div>
+
+        <span class="label">
+          Circle
+        </span>
+
+        <h2>
+          {{ c.name }}
+        </h2>
+
+      </div>
+
+      <div class="status">
+
+        <span class="label">
+          Status
+        </span>
+
+        <strong>
+          {{ c.status }}
+        </strong>
+
+      </div>
+
     </div>
 
-    <div class="sidebar-section-title">ORGANIZER NAVIGATION</div>
-    <nav class="sidebar-nav">
-      <a [routerLink]="['/organizer/circles', activeCircle.id]" class="nav-item">Circle Overview</a>
-      <a [routerLink]="['/organizer/circles', activeCircle.id, 'other-members']" class="nav-item">Manage Other Members</a>
-      <a [routerLink]="['/organizer/circles', activeCircle.id, 'round']" class="nav-item">Live Round Ledger</a>
-      <a [routerLink]="['/organizer/circles', activeCircle.id, 'history']" class="nav-item">Historical Winners</a>
-      <button (click)="createNewEkub()" class="nav-item highlight-btn">+ Create New Ekub</button>
-    </nav>
-  </aside>
 
-  <!-- Main Content Area -->
-  <main class="main-content">
-    <!-- Top Global Bar -->
-    <header class="top-bar">
-      <div class="top-bar-left">
-        <span class="guarantee-text">100% Authoritative Ledger Guarantee | Rotating Savings & Credit Circle | Zero Bank Fees (Record Book Only)</span>
-      </div>
-      <div class="top-bar-right">
-        <span class="circle-id-pill">Circle ID: #EKUB-2026-AA</span>
-        <span class="lang-pill">Amharic / EN</span>
-      </div>
-    </header>
+    <!-- Statistics -->
 
-    <div class="content-body">
-      <!-- Crimson Banner Control Hub -->
-      <div class="crimson-banner">
-        <div class="banner-text">
-          <h2>Organizer Control Hub & Access Panel</h2>
-          <p>Active Circle: {{ activeCircle.name }} · Cadence: {{ activeCircle.cadence }} · Per Round Pot: {{ activeCircle.perRoundPot }}</p>
-          <p class="rule-text">Server Rule: Members who already received the pot remain obligated to pay all subsequent rounds.</p>
-        </div>
-        <div class="banner-actions">
-          <button (click)="createNewEkub()" class="btn btn-primary-light">+ Create New Ekub</button>
-          <button (click)="exportAuditLogs()" class="btn btn-export">EXPORT AUDIT CSV / JSON</button>
-        </div>
+    <div class="stats">
+
+      <div class="stat-card">
+
+        <span class="label">
+          Contribution
+        </span>
+
+        <strong>
+          {{ c.contributionAmount | number:'1.2-2' }} Birr
+        </strong>
+
       </div>
 
-      <!-- Rows and Columns Table Layout for Organizer Modules -->
-      <div class="table-card">
-        <div class="table-header-flex">
+
+      <div class="stat-card">
+
+        <span class="label">
+          Members
+        </span>
+
+        <strong>
+          {{ c.members.length }}
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span class="label">
+          Current Round
+        </span>
+
+        <strong>
+          {{ c.currentRoundNumber }}
+        </strong>
+
+      </div>
+
+
+      <div class="stat-card">
+
+        <span class="label">
+          Current Pot
+        </span>
+
+        <strong>
+          {{ totalPot() | number:'1.2-2' }} Birr
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- Forming -->
+
+    <div
+      class="card"
+      *ngIf="c.status === 'Forming'">
+
+      <h2>
+        Start Circle
+      </h2>
+
+      <p>
+        Add all members before starting the circle.
+        After starting, the member list will be locked.
+      </p>
+
+      <p>
+        Current members:
+        <strong>{{ c.members.length }}</strong>
+      </p>
+
+      <button
+        class="primary-btn"
+        [disabled]="c.members.length < 2"
+        (click)="startCircle()">
+
+        Start Circle
+
+      </button>
+
+      <p
+        class="warning"
+        *ngIf="c.members.length < 2">
+
+        At least 2 members are required.
+      </p>
+
+    </div>
+
+
+    <!-- Active Circle -->
+
+    <ng-container *ngIf="c.status === 'Active'">
+
+      <!-- Current Round -->
+
+      <div class="card">
+
+        <div class="section-header">
+
           <div>
-            <h3>Organizer Management Pages & Access Table</h3>
-            <p class="text-muted">Structured rows and columns view of all accessible manager modules and endpoints.</p>
+
+            <span class="label">
+              Current Round
+            </span>
+
+            <h2>
+              Round {{ c.currentRoundNumber }}
+            </h2>
+
           </div>
+
+          <div
+            class="round-status"
+            *ngIf="currentRound() as round">
+
+            {{ round.status }}
+
+          </div>
+
         </div>
 
-        <table class="audit-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>ORGANIZER MODULE</th>
-              <th>TARGET PAGE / FUNCTION</th>
-              <th>CURRENT METRIC STATUS</th>
-              <th>ACTION LINK</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let mod of organizerModulesTable">
-              <td><strong>{{ mod.id }}</strong></td>
-              <td>
-                <span class="module-title">{{ mod.moduleName }}</span>
-              </td>
-              <td>{{ mod.targetPage }}</td>
-              <td><span class="badge badge-status">{{ mod.metricsStatus }}</span></td>
-              <td>
-                <a [routerLink]="mod.route" class="btn" [ngClass]="mod.btnClass">{{ mod.actionText }}</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <!-- Receiver -->
+
+        <div
+          class="receiver"
+          *ngIf="currentRound() as round">
+
+          <span>
+            Current Receiver
+          </span>
+
+          <strong>
+            {{ round.designatedReceiver }}
+          </strong>
+
+        </div>
+
+
+        <!-- Members -->
+
+        <h3>
+          Payment Ledger
+        </h3>
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>#</th>
+
+                <th>Member</th>
+
+                <th>Payment</th>
+
+                <th>Received</th>
+
+                <th>Action</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let member of c.members;
+                  let i = index
+                ">
+
+                <td>
+                  {{ i + 1 }}
+                </td>
+
+                <td>
+                  {{ member.fullName }}
+                </td>
+
+                <td>
+
+                  <span
+                    class="badge paid"
+                    *ngIf="member.hasPaid">
+
+                    Paid
+
+                  </span>
+
+                  <span
+                    class="badge unpaid"
+                    *ngIf="!member.hasPaid">
+
+                    Unpaid
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <span
+                    *ngIf="member.hasReceived">
+
+                    ✓ Received
+
+                  </span>
+
+                  <span
+                    *ngIf="!member.hasReceived">
+
+                    —
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <button
+                    class="payment-btn"
+                    *ngIf="!member.hasPaid"
+                    (click)="togglePayment(member.memberId)">
+
+                    Mark Paid
+
+                  </button>
+
+                  <span
+                    *ngIf="member.hasPaid">
+
+                    Recorded
+
+                  </span>
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- Payout -->
+
+        <div class="payout-section">
+
+          <div>
+
+            <span class="label">
+              Total Pot
+            </span>
+
+            <strong class="pot">
+              {{ totalPot() | number:'1.2-2' }}
+              Birr
+            </strong>
+
+          </div>
+
+
+          <button
+            class="payout-btn"
+            [disabled]="!allPaid()"
+            (click)="payoutCurrentRound()">
+
+            Pay Current Receiver
+
+          </button>
+
+        </div>
+
+
+        <p
+          class="warning"
+          *ngIf="!allPaid()">
+
+          All members must pay before the organizer
+          can pay the current receiver.
+
+        </p>
+
       </div>
 
-      <!-- Footer Audit Note -->
-      <div class="footer-audit-note">
-        <span>Immutable Audit Invariant: Each member receives the pot at most once (Single Pot Win Rule).</span>
-        <span>Authorization Level: Host / Organizer Administrator</span>
+    </ng-container>
+
+
+    <!-- Round History -->
+
+    <div class="card">
+
+      <h2>
+        Round History
+      </h2>
+
+      <div
+        class="history"
+        *ngIf="c.rounds.length > 0">
+
+        <div
+          class="history-row"
+          *ngFor="let round of c.rounds">
+
+          <span>
+            Round {{ round.roundNumber }}
+          </span>
+
+          <span>
+            {{ round.designatedReceiver }}
+          </span>
+
+          <span>
+            {{ round.status }}
+          </span>
+
+        </div>
+
       </div>
+
+      <p *ngIf="c.rounds.length === 0">
+
+        No rounds have been created yet.
+
+      </p>
+
     </div>
-  </main>
+
+  </ng-container>
+
 </div>
