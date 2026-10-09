@@ -1,0 +1,56 @@
+<header class="header">
+
+  <div class="header-left">
+
+    <div class="logo">
+      EkubCircle
+    </div>
+
+    <nav>
+      <a
+        routerLink="/organizer/dashboard"
+        routerLinkActive="active">
+
+        Dashboard
+
+      </a>
+    </nav>
+
+  </div>
+
+
+  <div class="header-right">
+
+    <div class="user-info">
+
+      <div class="avatar">
+        {{ userName.charAt(0) }}
+      </div>
+
+      <div class="user-details">
+
+        <strong>
+          {{ userName }}
+        </strong>
+
+        <span>
+          Organizer
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="logout-btn"
+      type="button"
+      (click)="logout()">
+
+      Logout
+
+    </button>
+
+  </div>
+
+</header>

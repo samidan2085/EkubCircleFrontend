@@ -1,0 +1,89 @@
+<main class="members-page">
+  <header class="page-header">
+    <div>
+      <h1>Circle Members</h1>
+      <p>Manage members and create new member accounts.</p>
+    </div>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="message error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="message success">{{ successMessage() }}</div>
+  }
+
+  <section class="panel">
+    <h2>Add a Member</h2>
+
+    @if (circleStatus().toLowerCase() === 'forming') {
+      <form [formGroup]="memberForm" (ngSubmit)="addMember()">
+        <label for="name">Full Name</label>
+        <input id="name" formControlName="name"
+          placeholder="Enter full name" />
+
+        @if (memberForm.controls.name.touched &&
+             memberForm.controls.name.invalid) {
+          <small class="field-error">Full name is required.</small>
+        }
+
+        <label for="email">Email Address</label>
+        <input id="email" type="email" formControlName="email"
+          placeholder="member@example.com" />
+
+        @if (memberForm.controls.email.touched &&
+             memberForm.controls.email.invalid) {
+          <small class="field-error">Enter a valid email address.</small>
+        }
+
+        <label for="password">Temporary Password</label>
+        <input id="password" type="password"
+          formControlName="temporaryPassword"
+          autocomplete="new-password"
+          placeholder="Enter temporary password" />
+
+        <button type="submit"
+          [disabled]="memberForm.invalid || isAdding()">
+          {{ isAdding() ? 'Adding...' : 'Add Member' }}
+        </button>
+      </form>
+    } @else {
+      <p>New members cannot be added after the circle starts.</p>
+    }
+  </section>
+
+  <section class="panel">
+    <h2>Member List</h2>
+
+    @if (isLoading()) {
+      <p>Loading circle...</p>
+    } @else if (members().length === 0) {
+      <p>No members found.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Member Name</th>
+              <th>Email</th>
+              <th>Member ID</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (member of members(); track member.userId; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.userId }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

@@ -5,10 +5,11 @@ import { RegisterComponent } from './features/auth/register/register.component';
 import { ChangePasswordComponent } from './features/member/change-password/change-password.component';
 import { OrganizerDashboardComponent } from './features/organizer/organizer-dashboard.component';
 import { MemberHomeComponent } from './features/member/member-home.component';
-import { AddMemberComponent } from './features/organizer/add-member.component';
+import { AddMemberComponent } from './features/organizer/organizer-members/add-member.component';
 import { CircleDetailComponent } from './features/member/circle-detail/circle-detail.component';
 import { RoundHistoryComponent } from './features/organizer/round-history/round-history.component';
 import { OtherMemberComponent } from './features/organizer/other-member/other-member.component';
+import { OrganizerTransactionsComponent } from'./features/organizer/organizer-transactions/organizer-transactions.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   
@@ -54,9 +55,13 @@ export const routes: Routes = [
   // canActivate: [authGuard]
 },
 { 
-  path: 'organizer/circles/:id/add-member', 
+  path: 'organizer/add-member', 
   component: AddMemberComponent,
   //canActivate: [authGuard] 
+},
+{
+  path: 'organizer/transactions',
+  component: OrganizerTransactionsComponent
 }
   //{ path: '**', redirectTo: 'login' }
 ];

@@ -1,0 +1,44 @@
+<main class="transactions-page">
+  <header>
+    <h1>Member Transactions</h1>
+    <p>Review payments recorded for your circle.</p>
+  </header>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <section class="panel">
+    @if (isLoading()) {
+      <p>Loading transactions...</p>
+    } @else if (transactions().length === 0) {
+      <p>No payment transactions have been recorded yet.</p>
+    } @else {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Round</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (tx of transactions(); track tx.paymentId) {
+              <tr>
+                <td>{{ tx.memberName }}</td>
+                <td>{{ tx.roundNumber }}</td>
+                <td>{{ tx.amount | number:'1.2-2' }}</td>
+                <td>{{ tx.paidAt | date:'medium' }}</td>
+                <td><span class="status">{{ tx.status }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

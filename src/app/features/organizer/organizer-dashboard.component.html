@@ -1,433 +1,442 @@
-<div class="dashboard">
-
-  <div class="header">
-    <div>
-      <h1>Organizer Dashboard</h1>
-
-      <p>
-        Manage your Ekub circle and current round.
-      </p>
-    </div>
-
-    <button
-      class="refresh-btn"
-      (click)="loadCircleDetails()">
-
-      Refresh
-    </button>
-  </div>
-
-
-  <!-- Loading -->
-
-  <div
-    class="message loading"
-    *ngIf="isLoading()">
-
-    Loading circle details...
-  </div>
-
-
-  <!-- Error -->
-
-  <div
-    class="message error"
-    *ngIf="errorMessage()">
-
-    {{ errorMessage() }}
-
-  </div>
-
-
-  <!-- Success -->
-
-  <div
-    class="message success"
-    *ngIf="successMessage()">
-
-    {{ successMessage() }}
-
-  </div>
-
-
-  <!-- Dashboard -->
-
-  <ng-container *ngIf="!isLoading() && circle() as c">
-
-    <!-- Circle Information -->
-
-    <div class="card circle-card">
-
-      <div>
-
-        <span class="label">
-          Circle
-        </span>
-
-        <h2>
-          {{ c.name }}
-        </h2>
-
-      </div>
-
-      <div class="status">
-
-        <span class="label">
-          Status
-        </span>
-
-        <strong>
-          {{ c.status }}
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <!-- Statistics -->
-
-    <div class="stats">
-
-      <div class="stat-card">
-
-        <span class="label">
-          Contribution
-        </span>
-
-        <strong>
-          {{ c.contributionAmount | number:'1.2-2' }} Birr
-        </strong>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          Members
-        </span>
-
-        <strong>
-          {{ c.members.length }}
-        </strong>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          Current Round
-        </span>
-
-        <strong>
-          {{ c.currentRoundNumber }}
-        </strong>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <span class="label">
-          Current Pot
-        </span>
-
-        <strong>
-          {{ totalPot() | number:'1.2-2' }} Birr
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <!-- Forming -->
-
-    <div
-      class="card"
-      *ngIf="c.status === 'Forming'">
-
-      <h2>
-        Start Circle
-      </h2>
-
-      <p>
-        Add all members before starting the circle.
-        After starting, the member list will be locked.
-      </p>
-
-      <p>
-        Current members:
-        <strong>{{ c.members.length }}</strong>
-      </p>
-
-      <button
-        class="primary-btn"
-        [disabled]="c.members.length < 2"
-        (click)="startCircle()">
-
-        Start Circle
-
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a routerLink="/organizer/dashboard" class="brand">
+      <span class="brand-logo">E</span>
+      <span>EkubCircle</span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/organizer/dashboard" class="nav-item active">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </a>
+
+      <a routerLink="/organizer/dashboard" class="nav-item">
+        <span class="nav-icon">◉</span>
+        My Circles
+      </a>
+
+    <a routerLink="/organizer/transactions">
+        <span class="nav-icon">⇄</span>
+        Transactions
+      </a>
+
+      <a routerLink="/organizer/add-member" class="nav-item">
+        <span class="nav-icon">♧</span>
+        Members
+      </a>
+
+      <a routerLink="/organizer/dashboard" class="nav-item">
+        <span class="nav-icon">⚙</span>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="nav-item logout-btn" type="button" (click)="logout()">
+        <span class="nav-icon">⇥</span>
+        Logout
       </button>
 
-      <p
-        class="warning"
-        *ngIf="c.members.length < 2">
-
-        At least 2 members are required.
-      </p>
-
+      <p>EkubCircle · Record your circle</p>
     </div>
+  </aside>
 
+  <!-- MAIN CONTENT -->
+  <main class="main-area">
 
-    <!-- Active Circle -->
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          type="button"
+          class="menu-btn"
+          aria-label="Menu">
+          ☰
+        </button>
 
-    <ng-container *ngIf="c.status === 'Active'">
-
-      <!-- Current Round -->
-
-      <div class="card">
-
-        <div class="section-header">
-
-          <div>
-
-            <span class="label">
-              Current Round
-            </span>
-
-            <h2>
-              Round {{ c.currentRoundNumber }}
-            </h2>
-
-          </div>
-
-          <div
-            class="round-status"
-            *ngIf="currentRound() as round">
-
-            {{ round.status }}
-
-          </div>
-
+        <div>
+          <h1>Circle Dashboard</h1>
+          <p>Manage your contributions and payouts.</p>
         </div>
+      </div>
 
+      <div class="topbar-right">
+        <span class="online-dot"></span>
+        <span class="online-label">Online</span>
+        <span class="divider"></span>
+        <span class="role-label">Organizer</span>
+        <div class="profile-avatar">O</div>
+      </div>
+    </header>
 
-        <!-- Receiver -->
+    <section class="dashboard-content">
 
-        <div
-          class="receiver"
-          *ngIf="currentRound() as round">
+      <!-- LOADING -->
+      <div class="message loading" *ngIf="isLoading()">
+        Loading your dashboard...
+      </div>
 
-          <span>
-            Current Receiver
-          </span>
+      <!-- ERROR -->
+      <div class="message error" *ngIf="errorMessage()">
+        <span>{{ errorMessage() }}</span>
+        <button type="button" (click)="loadCircleDetails()">
+          Retry
+        </button>
+      </div>
 
-          <strong>
-            {{ round.designatedReceiver }}
-          </strong>
+      <!-- SUCCESS -->
+      <div class="message success" *ngIf="successMessage()">
+        {{ successMessage() }}
+      </div>
 
-        </div>
+      <ng-container *ngIf="!isLoading() && circle() as c">
 
+        <!-- SUMMARY CARDS -->
+        <section class="stats-grid">
 
-        <!-- Members -->
+          <article class="stat-card contribution-card">
+            <div class="stat-heading">
+              <span>My Contribution</span>
+              <span class="stat-icon">↗</span>
+            </div>
 
-        <h3>
-          Payment Ledger
-        </h3>
-
-        <div class="table-container">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>#</th>
-
-                <th>Member</th>
-
-                <th>Payment</th>
-
-                <th>Received</th>
-
-                <th>Action</th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              <tr
-                *ngFor="
-                  let member of c.members;
-                  let i = index
-                ">
-
-                <td>
-                  {{ i + 1 }}
-                </td>
-
-                <td>
-                  {{ member.fullName }}
-                </td>
-
-                <td>
-
-                  <span
-                    class="badge paid"
-                    *ngIf="member.hasPaid">
-
-                    Paid
-
-                  </span>
-
-                  <span
-                    class="badge unpaid"
-                    *ngIf="!member.hasPaid">
-
-                    Unpaid
-
-                  </span>
-
-                </td>
-
-                <td>
-
-                  <span
-                    *ngIf="member.hasReceived">
-
-                    ✓ Received
-
-                  </span>
-
-                  <span
-                    *ngIf="!member.hasReceived">
-
-                    —
-
-                  </span>
-
-                </td>
-
-                <td>
-
-                  <button
-                    class="payment-btn"
-                    *ngIf="!member.hasPaid"
-                    (click)="togglePayment(member.memberId)">
-
-                    Mark Paid
-
-                  </button>
-
-                  <span
-                    *ngIf="member.hasPaid">
-
-                    Recorded
-
-                  </span>
-
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        <!-- Payout -->
-
-        <div class="payout-section">
-
-          <div>
-
-            <span class="label">
-              Total Pot
-            </span>
-
-            <strong class="pot">
-              {{ totalPot() | number:'1.2-2' }}
-              Birr
+            <strong class="stat-value">
+              {{ c.contributionAmount | number:'1.2-2' }}
+              <small>Birr</small>
             </strong>
 
-          </div>
+            <p>Contribution per member, per round</p>
+          </article>
 
+          <article class="stat-card payout-stat-card">
+            <div class="stat-heading">
+              <span>Current Round</span>
+              <span class="stat-icon">▦</span>
+            </div>
 
-          <button
-            class="payout-btn"
-            [disabled]="!allPaid()"
-            (click)="payoutCurrentRound()">
+            <strong class="stat-value">
+              Round {{ c.currentRoundNumber }}
+            </strong>
 
-            Pay Current Receiver
+            <p>
+              {{ currentRound()?.designatedReceiver || 'Receiver pending' }}
+            </p>
+          </article>
 
-          </button>
+          <article class="stat-card fund-card">
+            <div class="stat-heading">
+              <span>Total Fund Value</span>
+              <span class="stat-icon">◉</span>
+            </div>
 
-        </div>
+            <strong class="stat-value">
+              {{ totalPot() | number:'1.2-2' }}
+              <small>Birr</small>
+            </strong>
 
+            <p>Collected in the current round</p>
+          </article>
 
-        <p
-          class="warning"
-          *ngIf="!allPaid()">
+          <article class="stat-card members-stat-card">
+            <div class="stat-heading">
+              <span>Active Members</span>
+              <span class="stat-icon">♧</span>
+            </div>
 
-          All members must pay before the organizer
-          can pay the current receiver.
+            <strong class="stat-value">
+              {{ c.members.length }}
+            </strong>
 
-        </p>
+            <p>{{ paidCount() }} paid this round</p>
+          </article>
 
-      </div>
+        </section>
 
-    </ng-container>
+        <!-- MAIN GRID -->
+        <section class="dashboard-grid">
 
+          <!-- FUND PERFORMANCE CHART -->
+          <article class="panel chart-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Circle Overview &amp; Fund Performance</h2>
+                <p>Payment progress for your current circle</p>
+              </div>
 
-    <!-- Round History -->
+              <button
+                type="button"
+                class="outline-btn"
+                (click)="loadCircleDetails()">
+                ↻ Refresh
+              </button>
+            </div>
 
-    <div class="card">
+            <div class="chart-legend">
+              <span><i class="legend-dot teal"></i> Contributions</span>
+              <span><i class="legend-dot blue"></i> Payments</span>
+              <span><i class="legend-dot gold"></i> Pot value</span>
+            </div>
 
-      <h2>
-        Round History
-      </h2>
+            <div class="chart-area">
+              <svg
+                viewBox="0 0 600 235"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Illustrative circle performance chart">
 
-      <div
-        class="history"
-        *ngIf="c.rounds.length > 0">
+                <defs>
+                  <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#12cbb4" stop-opacity=".25"/>
+                    <stop offset="100%" stop-color="#12cbb4" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
 
-        <div
-          class="history-row"
-          *ngFor="let round of c.rounds">
+                <g class="chart-grid">
+                  <line x1="48" y1="25" x2="585" y2="25"/>
+                  <line x1="48" y1="65" x2="585" y2="65"/>
+                  <line x1="48" y1="105" x2="585" y2="105"/>
+                  <line x1="48" y1="145" x2="585" y2="145"/>
+                  <line x1="48" y1="185" x2="585" y2="185"/>
+                </g>
 
-          <span>
-            Round {{ round.roundNumber }}
-          </span>
+                <g class="chart-labels">
+                  <text x="5" y="29">100%</text>
+                  <text x="12" y="69">75%</text>
+                  <text x="12" y="109">50%</text>
+                  <text x="12" y="149">25%</text>
+                  <text x="24" y="189">0%</text>
+                </g>
 
-          <span>
-            {{ round.designatedReceiver }}
-          </span>
+                <path
+                  d="M48 175 L95 150 L140 158 L190 120 L235 132 L280 142 L330 95 L380 112 L425 82 L475 91 L530 49 L585 32 L585 185 L48 185 Z"
+                  fill="url(#chartFill)"/>
 
-          <span>
-            {{ round.status }}
-          </span>
+                <polyline
+                  class="chart-line chart-line-teal"
+                  points="48,175 95,150 140,158 190,120 235,132 280,142 330,95 380,112 425,82 475,91 530,49 585,32"/>
 
-        </div>
+                <polyline
+                  class="chart-line chart-line-blue"
+                  points="48,183 95,173 140,177 190,158 235,164 280,171 330,150 380,155 425,139 475,145 530,120 585,110"/>
 
-      </div>
+                <polyline
+                  class="chart-line chart-line-gold"
+                  points="48,180 95,165 140,170 190,145 235,151 280,159 330,125 380,138 425,115 475,122 530,91 585,80"/>
 
-      <p *ngIf="c.rounds.length === 0">
+                <g class="chart-labels chart-months">
+                  <text x="48" y="215">Jan</text>
+                  <text x="95" y="215">Feb</text>
+                  <text x="140" y="215">Mar</text>
+                  <text x="190" y="215">Apr</text>
+                  <text x="235" y="215">May</text>
+                  <text x="280" y="215">Jun</text>
+                  <text x="330" y="215">Jul</text>
+                  <text x="380" y="215">Aug</text>
+                  <text x="425" y="215">Sep</text>
+                  <text x="475" y="215">Oct</text>
+                  <text x="530" y="215">Nov</text>
+                  <text x="585" y="215">Dec</text>
+                </g>
+              </svg>
+            </div>
 
-        No rounds have been created yet.
+            <p class="chart-note">
+              Illustrative chart design. Historical performance will be
+              connected to actual payment records.
+            </p>
+          </article>
 
-      </p>
+          <!-- MY CIRCLES -->
+          <article class="panel circles-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>My Circles</h2>
+                <p>Your circle management overview</p>
+              </div>
 
-    </div>
+              <a
+                routerLink="/organizer/dashboard"
+                class="create-btn">
+                + My Circle
+              </a>
+            </div>
 
-  </ng-container>
+            <div class="circle-table-header">
+              <span>Circle</span>
+              <span>Members</span>
+              <span>Status</span>
+              <span>Progress</span>
+            </div>
 
+            <div class="circle-row">
+              <div class="circle-name">
+                <div class="circle-avatar">E</div>
+
+                <div>
+                  <strong>{{ c.name }}</strong>
+                  <small>{{ c.meetingLabel }}</small>
+                </div>
+              </div>
+
+              <span>{{ c.members.length }}</span>
+
+              <span class="status-pill">
+                {{ c.status }}
+              </span>
+
+              <div class="circle-progress">
+                <span>
+                  {{ paidCount() }}/{{ c.members.length }}
+                </span>
+
+                <div class="mini-progress">
+                  <span [style.width.%]="paymentProgress()"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="circle-summary">
+              <span>Payment completion</span>
+              <strong>
+                {{ paymentProgress() | number:'1.0-0' }}%
+              </strong>
+            </div>
+          </article>
+
+          <!-- RECENT ACTIVITY -->
+          <article class="panel activity-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Recent Activity</h2>
+                <p>Latest circle updates</p>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon teal-bg">↗</div>
+
+              <div class="activity-details">
+                <strong>Member payment progress</strong>
+                <span>
+                  {{ paidCount() }} of {{ c.members.length }}
+                  members marked as paid
+                </span>
+              </div>
+
+              <span class="activity-value">
+                {{ totalPot() | number:'1.2-2' }} Birr
+              </span>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon gold-bg">◉</div>
+
+              <div class="activity-details">
+                <strong>Current round</strong>
+                <span>
+                  Round {{ c.currentRoundNumber }} · {{ c.status }}
+                </span>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon blue-bg">♧</div>
+
+              <div class="activity-details">
+                <strong>Members who received the pot</strong>
+                <span>
+                  {{ receivedCount() }} of {{ c.members.length }}
+                  members have received once
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <!-- PAYOUT SCHEDULE -->
+          <article class="panel schedule-panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Round Payout Schedule</h2>
+                <p>Fixed receiving order and payment status</p>
+              </div>
+            </div>
+
+            <div class="schedule-table-wrapper">
+              <table class="schedule-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Payment Status</th>
+                    <th>Payout Round</th>
+                    <th>Received</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let member of c.members; let i = index">
+                    <td>
+                      <div class="schedule-member">
+                        <div class="small-avatar">
+                          {{ member.fullName.charAt(0).toUpperCase() }}
+                        </div>
+
+                        <span>{{ member.fullName }}</span>
+                      </div>
+                    </td>
+
+                    <td>
+                      <span
+                        class="payment-pill"
+                        [class.paid]="member.hasPaid"
+                        [class.pending]="!member.hasPaid">
+                        {{ member.hasPaid ? 'Paid' : 'Pending' }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span class="round-pill">
+                        Round {{ i + 1 }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span
+                        class="received-pill"
+                        [class.received]="member.hasReceived">
+                        {{ member.hasReceived ? 'Received' : 'Pending' }}
+                      </span>
+                    </td>
+                  </tr>
+
+                  <tr *ngIf="c.members.length === 0">
+                    <td colspan="4" class="empty-state">
+                      No members found.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="schedule-footer">
+              <span>
+                Current round: {{ c.currentRoundNumber }}
+              </span>
+
+              <button
+                type="button"
+                class="outline-btn"
+                (click)="loadCircleDetails()">
+                Refresh schedule
+              </button>
+            </div>
+          </article>
+
+        </section>
+      </ng-container>
+    </section> 
+
+  </main>
 </div>

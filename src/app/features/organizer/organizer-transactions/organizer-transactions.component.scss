@@ -1,0 +1,55 @@
+.transactions-page {
+  padding: 24px;
+  color: #1f2937;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin-bottom: 8px;
+}
+
+header p {
+  color: #6b7280;
+}
+
+.panel {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #f9fafb;
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 10px;
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 20px;
+}
+
+.error {
+  color: #b91c1c;
+}

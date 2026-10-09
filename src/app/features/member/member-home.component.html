@@ -1,56 +1,405 @@
-<div class="dashboard-container">
-  <!-- Top Navigation Bar -->
-  <header class="dashboard-header">
-    <div class="logo-section">
-      <h2>EkubCircle</h2>
-      <span class="badge">Member Portal</span>
-    </div>
-    <div class="user-actions">
-      <span>Welcome, <strong>{{ memberName }}</strong></span>
-      <a routerLink="/member/change-password" class="btn btn-secondary">Change Password</a>
-      <button (click)="logout()" class="btn btn-danger">Sign Out</button>
-    </div>
-  </header>
+<div class="dashboard-layout">
 
-  <!-- Main Content Grid -->
-  <div class="dashboard-grid">
-    <!-- Active Ekubs Card -->
-    <div class="card">
-      <h3>My Active Ekubs</h3>
-      <p class="text-muted">You are currently participating in 2 active circles.</p>
-      
-      <div class="ekub-list">
-        <div class="ekub-item">
-          <div>
-            <h4>Monthly Family Ekub</h4>
-            <p>Contribution: 2,000 ETB / month</p>
-          </div>
-          <span class="status-active">Active</span>
-        </div>
-        
-        <div class="ekub-item">
-          <div>
-            <h4>Office Colleagues Circle</h4>
-            <p>Contribution: 500 ETB / week</p>
-          </div>
-          <span class="status-active">Active</span>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a class="brand" routerLink="/member/home">
+      <span class="brand-logo">E</span>
+      <span class="brand-text">
+        <strong>EkubCircle</strong>
+        <small>Rotating Savings</small>
+      </span>
+    </a>
+
+    <div class="sidebar-label">MEMBER MENU</div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/member/home" routerLinkActive="active">
+        <span class="nav-icon">▦</span>
+        <span>Dashboard</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="profile-card">
+        <div class="profile-avatar">M</div>
+        <div class="profile-info">
+          <strong>Member Portal</strong>
+          <small>EkubCircle Member</small>
         </div>
       </div>
+
+      <button type="button" class="logout-button" (click)="logout()">
+        <span>↪</span>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">MEMBER PORTAL</p>
+        <h1>My Dashboard</h1>
+        <p class="page-description">
+          Manage your contributions and follow your Ekub progress.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="refresh-button"
+        (click)="refresh()"
+        [disabled]="isLoading() || isPaying()">
+        <span class="refresh-icon">↻</span>
+        Refresh
+      </button>
+    </header>
+
+    <!-- Loading -->
+    @if (isLoading() && !dashboard()) {
+      <section class="message-card loading-card">
+        <span class="loader"></span>
+        <p>Loading your dashboard...</p>
+      </section>
+    }
+
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="alert alert-error" role="alert">
+        <span class="alert-icon">!</span>
+        <div>
+          <strong>Something went wrong</strong>
+          <p>{{ errorMessage() }}</p>
+        </div>
+        <button
+          type="button"
+          class="alert-close"
+          aria-label="Dismiss error"
+          (click)="errorMessage.set('')">
+          ×
+        </button>
+      </div>
+    }
+
+    <!-- Success -->
+    @if (successMessage()) {
+      <div class="alert alert-success" role="status">
+        <span class="alert-icon">✓</span>
+        <div>
+          <strong>Success</strong>
+          <p>{{ successMessage() }}</p>
+        </div>
+        <button
+          type="button"
+          class="alert-close"
+          aria-label="Dismiss message"
+          (click)="successMessage.set('')">
+          ×
+        </button>
+      </div>
+    }
+
+    <!-- Dashboard data -->
+    @if (dashboard(); as data) {
+
+      <!-- Welcome / circle banner -->
+      <section class="welcome-card">
+        <div class="welcome-content">
+          <span class="welcome-label">YOUR EKUB CIRCLE</span>
+          <h2>{{ data.circleName }}</h2>
+          <p>
+            {{ data.meetingLabel || 'Meeting schedule not specified' }}
+          </p>
+
+          <div class="welcome-tags">
+            <span class="status-pill"
+              [class.status-active]="data.circleStatus === 'Active'"
+              [class.status-forming]="data.circleStatus === 'Forming'"
+              [class.status-completed]="data.circleStatus === 'Completed'">
+              {{ data.circleStatus }}
+            </span>
+
+            <span class="round-tag">
+              Round {{ data.currentRoundNumber }}
+            </span>
+          </div>
+        </div>
+
+        <div class="welcome-decoration" aria-hidden="true">
+          <div class="decoration-circle decoration-one"></div>
+          <div class="decoration-circle decoration-two"></div>
+          <div class="decoration-symbol">E</div>
+        </div>
+      </section>
+      <section class="panel members-panel">
+  <div class="panel-heading">
+    <div>
+      <p class="eyebrow">YOUR GROUP</p>
+      <h2>Circle Members</h2>
     </div>
 
-    <!-- Quick Stats / Overview Card -->
-    <div class="card">
-      <h3>Contribution Summary</h3>
-      <div class="stats-box">
-        <div class="stat-item">
-          <span class="label">Total Contributed</span>
-          <span class="value">14,000 ETB</span>
-        </div>
-        <div class="stat-item">
-          <span class="label">Next Payout Turn</span>
-          <span class="value">Nov 15, 2026</span>
-        </div>
-      </div>
-    </div>
+    <span>{{ data.members.length }} members</span>
   </div>
+
+  @for (member of data.members; track member.memberId) {
+    <div class="member-row">
+      <div class="member-avatar">
+        {{ member.fullName.charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="member-info">
+        <strong>{{ member.fullName }}</strong>
+
+        @if (member.memberId === data.circleId) {
+          <small>Member</small>
+        }
+      </div>
+
+      <span
+        class="payment-status"
+        [class.paid-status]="member.hasPaid"
+        [class.unpaid-status]="!member.hasPaid">
+        {{ member.hasPaid ? 'Paid' : 'Not Paid' }}
+      </span>
+    </div>
+  } @empty {
+    <p>No members found in this circle.</p>
+  }
+</section>
+
+      <!-- Summary cards -->
+      <section class="stats-grid">
+
+        <article class="stat-card fee-stat">
+          <div class="stat-top">
+            <span class="stat-icon fee-icon">ETB</span>
+            <span class="stat-caption">Per round</span>
+          </div>
+          <p class="stat-label">My Contribution Fee</p>
+          <h3>
+            {{ data.contributionAmount | number:'1.2-2' }}
+            <span>ETB</span>
+          </h3>
+          <p class="stat-note">Your required contribution each round</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon round-icon">↻</span>
+            <span class="stat-caption">Current</span>
+          </div>
+          <p class="stat-label">Current Round</p>
+          <h3>#{{ data.currentRoundNumber }}</h3>
+          <p class="stat-note">Round {{ data.currentRoundNumber }} of your circle</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon pot-icon">◈</span>
+            <span class="stat-caption">This round</span>
+          </div>
+          <p class="stat-label">Current Pot</p>
+          <h3>
+            {{ data.potAmount | number:'1.2-2' }}
+            <span>ETB</span>
+          </h3>
+          <p class="stat-note">Total contributions recorded for this round</p>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-icon members-icon">♙</span>
+            <span class="stat-caption">Circle members</span>
+          </div>
+          <p class="stat-label">Members Paid</p>
+          <h3>
+            {{ data.paidMemberCount }}
+            <span>/ {{ data.totalMemberCount }}</span>
+          </h3>
+          <p class="stat-note">Payments recorded for this round</p>
+        </article>
+
+      </section>
+
+      <!-- Main dashboard columns -->
+      <section class="content-grid">
+
+        <!-- Payment panel -->
+        <article class="panel payment-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">CONTRIBUTION</p>
+              <h2>My Payment</h2>
+            </div>
+
+            <span
+              class="payment-status"
+              [class.paid-status]="data.hasPaid"
+              [class.unpaid-status]="!data.hasPaid">
+              {{ data.hasPaid ? 'Paid' : 'Not Paid' }}
+            </span>
+          </div>
+
+          <div class="payment-amount">
+            <span>Amount due</span>
+            <h3>
+              {{ data.contributionAmount | number:'1.2-2' }}
+              <small>ETB</small>
+            </h3>
+          </div>
+
+          <div class="payment-detail">
+            <span>Circle</span>
+            <strong>{{ data.circleName }}</strong>
+          </div>
+
+          <div class="payment-detail">
+            <span>Round</span>
+            <strong>#{{ data.currentRoundNumber }}</strong>
+          </div>
+
+          <div class="payment-detail">
+            <span>Round status</span>
+            <strong>{{ data.roundStatus }}</strong>
+          </div>
+
+          @if (data.hasPaid) {
+            <div class="payment-feedback paid-feedback">
+              <span class="feedback-icon">✓</span>
+              <div>
+                <strong>Contribution recorded</strong>
+                <p>Your payment is recorded for this round.</p>
+              </div>
+            </div>
+          } @else if (
+            data.circleStatus === 'Active' &&
+            data.roundStatus === 'Open'
+          ) {
+            <div class="payment-feedback unpaid-feedback">
+              <span class="feedback-icon">!</span>
+              <div>
+                <strong>Payment required</strong>
+                <p>Please pay your contribution for this round.</p>
+              </div>
+            </div>
+<button
+      type="button"
+      (click)="payContribution()"
+      [disabled]="isPaying()">
+      {{ isPaying() ? 'Processing...' : 'Pay Contribution' }}
+    </button>
+            
+          } @else {
+            <div class="payment-feedback unpaid-feedback">
+              <span class="feedback-icon">i</span>
+              <div>
+                <strong>Payment unavailable</strong>
+                <p>
+                  Payment is available when the circle is active
+                  and the current round is open.
+                </p>
+              </div>
+            </div>
+          }
+
+          <p class="payment-note">
+            Your payment status updates after the server confirms your payment.
+          </p>
+        </article>
+
+        <!-- Current round panel -->
+        <article class="panel round-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">ROUND INFORMATION</p>
+              <h2>Current Round</h2>
+            </div>
+            <span class="round-number">
+              #{{ data.currentRoundNumber }}
+            </span>
+          </div>
+
+          <div class="receiver-card">
+            <div class="receiver-avatar">♙</div>
+            <div class="receiver-info">
+              <span>Designated Receiver</span>
+              <strong>{{ data.receiverName || 'Not assigned' }}</strong>
+              <small>Current round beneficiary</small>
+            </div>
+          </div>
+
+          <div class="round-divider"></div>
+
+          <div class="progress-heading">
+            <span>Member payment progress</span>
+            <strong>
+              {{ data.paidMemberCount }}/{{ data.totalMemberCount }}
+            </strong>
+          </div>
+
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Member payment progress"
+            [attr.aria-valuenow]="data.paidMemberCount"
+            [attr.aria-valuemin]="0"
+            [attr.aria-valuemax]="data.totalMemberCount">
+            <div
+              class="progress-fill"
+              [style.width.%]="data.totalMemberCount > 0
+                ? (data.paidMemberCount / data.totalMemberCount) * 100
+                : 0">
+            </div>
+          </div>
+
+          <p class="progress-description">
+            @if (data.totalMemberCount > 0) {
+              {{ data.paidMemberCount }} of {{ data.totalMemberCount }}
+              members have paid for this round.
+            } @else {
+              No members have been added to this circle yet.
+            }
+          </p>
+
+          <div class="round-summary">
+            <div>
+              <span>Contribution</span>
+              <strong>
+                {{ data.contributionAmount | number:'1.2-2' }} ETB
+              </strong>
+            </div>
+            <div>
+              <span>Current pot</span>
+              <strong>
+                {{ data.potAmount | number:'1.2-2' }} ETB
+              </strong>
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Account status -->
+      <section class="bottom-note">
+        <span class="note-icon">i</span>
+        <div>
+          <strong>Keep your contributions up to date</strong>
+          <p>
+            Contact your Organizer if your circle information, contribution
+            fee, or payment status appears incorrect.
+          </p>
+        </div>
+      </section>
+
+    }
+
+    <footer class="dashboard-footer">
+      <span>© EkubCircle</span>
+      <span>Member Portal</span>
+    </footer>
+
+  </main>
 </div>

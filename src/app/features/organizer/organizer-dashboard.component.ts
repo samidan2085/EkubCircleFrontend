@@ -1,3 +1,4 @@
+
 import {
   Component,
   OnInit,
@@ -7,7 +8,12 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+
+import { AuthService } from '../../services/auth.services';
+import { finalize } from 'rxjs/operators';
 
 export interface MemberPayment {
   memberId: string;
@@ -20,6 +26,40 @@ export interface RoundInfo {
   roundNumber: number;
   status: string;
   designatedReceiver: string;
+}
+
+export interface MemberTransaction {
+  memberId: string;
+  memberName: string;
+  roundNumber: number;
+  amount: number;
+  paidAt: string;
+}
+
+export interface RoundFundPerformance {
+  roundNumber: number;
+  collectedAmount: number;
+  expectedAmount: number;
+  paidMembers: number;
+  totalMembers: number;
+  status: string;
+}
+
+export interface DashboardResponse {
+  circleId: string;
+  circleName: string;
+  contributionAmount: number;
+  meetingLabel: string;
+  circleStatus: string;
+  currentRoundNumber: number;
+  currentRoundFund: number;
+  totalFundValue: number;
+  activeMembers: number;
+  totalMembers: number;
+  currentRoundPaidMembers: number;
+  currentRoundTotalMembers: number;
+  fundPerformance: RoundFundPerformance[];
+  transactions: MemberTransaction[];
 }
 
 export interface CircleDetail {
@@ -36,250 +76,339 @@ export interface CircleDetail {
 @Component({
   selector: 'app-organizer-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './organizer-dashboard.component.html',
   styleUrls: ['./organizer-dashboard.component.scss']
 })
 export class OrganizerDashboardComponent implements OnInit {
+  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
-  private http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:5034/api/circles';
+   private readonly fb = inject(FormBuilder);
 
-  private apiUrl =
-    'http://localhost:5034/api/circles';
+  readonly circle = signal<CircleDetail | null>(null);
+  readonly dashboard = signal<DashboardResponse | null>(null);
 
-  circle = signal<CircleDetail | null>(null);
+  readonly isLoading = signal(true);
+  readonly errorMessage = signal('');
+  readonly successMessage = signal('');
 
-  isLoading = signal<boolean>(true);
+  readonly isStarting = signal(false);
+  readonly isRecordingPayment = signal(false);
+  readonly isRecordingPayout = signal(false);
 
-  errorMessage = signal<string>('');
+  readonly transactions = computed(
+    () => this.dashboard()?.transactions ?? []
+  );
 
-  successMessage = signal<string>('');
+  readonly fundPerformance = computed(
+    () => this.dashboard()?.fundPerformance ?? []
+  );
 
-  totalPot = computed(() => {
-    const c = this.circle();
+  readonly paidCount = computed(
+    () => this.dashboard()?.currentRoundPaidMembers
+      ?? this.circle()?.members.filter(member => member.hasPaid).length
+      ?? 0
+  );
 
-    if (!c) {
-      return 0;
-    }
+  readonly receivedCount = computed(
+    () => this.circle()?.members.filter(member => member.hasReceived).length ?? 0
+  );
 
-    const paidCount = c.members.filter(
-      member => member.hasPaid
-    ).length;
+  readonly totalPot = computed(
+    () => this.dashboard()?.currentRoundFund
+      ?? this.paidCount() * (this.circle()?.contributionAmount ?? 0)
+  );
 
-    return paidCount * c.contributionAmount;
+  readonly totalFundValue = computed(
+    () => this.dashboard()?.totalFundValue ?? 0
+  );
+
+  readonly activeMembers = computed(
+    () => this.dashboard()?.activeMembers ?? this.circle()?.members.length ?? 0
+  );
+
+  readonly paymentProgress = computed(() => {
+    const total = this.dashboard()?.currentRoundTotalMembers
+      ?? this.circle()?.members.length
+      ?? 0;
+
+    return total === 0 ? 0 : (this.paidCount() / total) * 100;
   });
 
-  allPaid = computed(() => {
-    const c = this.circle();
+  readonly allPaid = computed(() => {
+    const total = this.dashboard()?.currentRoundTotalMembers
+      ?? this.circle()?.members.length
+      ?? 0;
 
-    if (!c || c.members.length === 0) {
-      return false;
-    }
-
-    return c.members.every(
-      member => member.hasPaid
-    );
+    return total > 0 && this.paidCount() === total;
   });
 
-  currentRound = computed(() => {
-    const c = this.circle();
+  readonly currentRound = computed(() => {
+    const circle = this.circle();
 
-    if (!c) {
-      return null;
-    }
-
-    return c.rounds.find(
-      round =>
-        round.roundNumber === c.currentRoundNumber
+    return circle?.rounds.find(
+      round => round.roundNumber === circle.currentRoundNumber
     ) ?? null;
   });
+ 
 
-  ngOnInit(): void {
-    this.loadCircleDetails();
+readonly isAddingMember = signal(false);
+readonly memberError = signal('');
+readonly memberSuccess = signal('');
+
+readonly memberForm = this.fb.nonNullable.group({
+  name: ['', Validators.required],
+  email: ['', [Validators.required, Validators.email]],
+  temporaryPassword: ['', Validators.required]
+});
+
+addMember(): void {
+  const currentCircle = this.circle();
+
+  if (!currentCircle || this.memberForm.invalid) {
+    this.memberForm.markAllAsTouched();
+    return;
   }
 
-  loadCircleDetails(): void {
+  if (currentCircle.status.toLowerCase() !== 'forming') {
+    this.memberError.set(
+      'You can only add members while the circle is forming.'
+    );
+    return;
+  }
 
+  this.isAddingMember.set(true);
+  this.memberError.set('');
+  this.memberSuccess.set('');
+
+  const formValue = this.memberForm.getRawValue();
+
+  this.http.post(
+    `${this.apiUrl}/${currentCircle.circleId}/members`,
+    {
+      name: formValue.name.trim(),
+      email: formValue.email.trim(),
+      temporaryPassword: formValue.temporaryPassword
+    }
+  ).subscribe({
+    next: () => {
+      this.isAddingMember.set(false);
+      this.memberSuccess.set('Member added successfully.');
+      this.memberForm.reset();
+
+      // Refresh the circle and dashboard data.
+      this.loadDashboard();
+    },
+    error: (error) => {
+      this.isAddingMember.set(false);
+
+      this.memberError.set(
+        error.error?.message ??
+        error.error?.title ??
+        'Failed to add member. Please check the information and try again.'
+      );
+    }
+  });
+}
+
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.http
-      .get<CircleDetail>(
-        `${this.apiUrl}/my`
-      )
-      .subscribe({
+    this.http.get<DashboardResponse>(
+      `${this.apiUrl}/my/dashboard`
+    ).subscribe({
+      next: (data) => {
+        this.dashboard.set(data);
 
-        next: data => {
+        // Keep a compatible circle model for the existing HTML.
+        this.circle.set({
+          circleId: data.circleId,
+          name: data.circleName,
+          contributionAmount: data.contributionAmount,
+          meetingLabel: data.meetingLabel,
+          status: data.circleStatus,
+          currentRoundNumber: data.currentRoundNumber,
+          members: [],
+          rounds: []
+        });
 
-          this.circle.set(data);
+        // Load existing member and round details.
+        this.loadCircleDetails();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        this.handleApiError(error);
+      }
+    });
+  }
 
-          this.isLoading.set(false);
-        },
+  loadCircleDetails(): void {
+    this.http.get<{
+      name: string;
+      contributionAmount: number;
+      meetingLabel: string;
+      members?: MemberPayment[];
+      rounds?: RoundInfo[];
+      status?: string;
+      circleId?: string;
+      currentRoundNumber?: number;
+    }>(`${this.apiUrl}/my`).subscribe({
+      next: (data) => {
+        const dashboard = this.dashboard();
 
-        error: err => {
+        this.circle.set({
+          circleId: data.circleId ?? dashboard?.circleId ?? '',
+          name: data.name ?? dashboard?.circleName ?? '',
+          contributionAmount: data.contributionAmount ?? 0,
+          meetingLabel: data.meetingLabel ?? '',
+          status: data.status ?? dashboard?.circleStatus ?? '',
+          currentRoundNumber:
+            data.currentRoundNumber ?? dashboard?.currentRoundNumber ?? 1,
+          members: data.members ?? [],
+          rounds: data.rounds ?? []
+        });
 
-          if (err.status === 404) {
-
-            this.errorMessage.set(
-              err.error?.message ||
-              'You do not have a circle yet.'
-            );
-
-          } else if (err.status === 401) {
-
-            this.errorMessage.set(
-              'Your session has expired. Please login again.'
-            );
-
-          } else if (err.status === 403) {
-
-            this.errorMessage.set(
-              'Only an Organizer can access this dashboard.'
-            );
-
-          } else {
-
-            this.errorMessage.set(
-              err.error?.message ||
-              'Failed to load circle details.'
-            );
-          }
-
-          this.isLoading.set(false);
-        }
-      });
+        this.isLoading.set(false);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        this.handleApiError(error);
+      }
+    });
   }
 
   startCircle(): void {
+    const circle = this.circle();
 
-    const c = this.circle();
-
-    if (!c) {
+    if (!circle || this.isStarting()) {
       return;
     }
 
-    if (c.members.length < 2) {
-
+    if (circle.members.length < 2) {
       this.errorMessage.set(
-        'At least 2 members are required to start the circle.'
+        'Add at least two members before starting the circle.'
       );
-
       return;
     }
 
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    this.isStarting.set(true);
+    this.clearMessages();
 
-    this.http
-      .post(
-        `${this.apiUrl}/${c.circleId}/start`,
-        {}
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.successMessage.set(
-            'Circle started successfully. Member list is now locked.'
-          );
-
-          this.loadCircleDetails();
-        },
-
-        error: err => {
-
-          this.errorMessage.set(
-            err.error?.message ||
-            'Could not start the circle.'
-          );
-        }
-      });
+    this.http.post(
+      `${this.apiUrl}/${circle.circleId}/start`,
+      {}
+    ).subscribe({
+      next: () => {
+        this.successMessage.set('Circle started successfully.');
+        this.isStarting.set(false);
+        this.loadDashboard();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isStarting.set(false);
+        this.handleApiError(error);
+      }
+    });
   }
 
   togglePayment(memberId: string): void {
+    const circle = this.circle();
 
-    const c = this.circle();
-
-    if (!c) {
+    if (!circle || this.isRecordingPayment()) {
       return;
     }
 
-    this.errorMessage.set('');
-    this.successMessage.set('');
+    if (circle.status.toLowerCase() !== 'active') {
+      this.errorMessage.set(
+        'Payments can only be recorded for an active circle.'
+      );
+      return;
+    }
 
-    this.http
-      .post(
-        `${this.apiUrl}/rounds/toggle-payment`,
-        {
-          circleId: c.circleId,
-          roundNumber: c.currentRoundNumber,
-          memberId: memberId
-        }
-      )
-      .subscribe({
+    const member = circle.members.find(
+      item => item.memberId === memberId
+    );
 
-        next: () => {
+    if (!member) {
+      this.errorMessage.set('Member not found.');
+      return;
+    }
 
-          this.successMessage.set(
-            'Payment recorded successfully.'
-          );
+    if (member.hasPaid) {
+      this.errorMessage.set(
+        'This member has already paid for the current round.'
+      );
+      return;
+    }
 
-          this.loadCircleDetails();
-        },
+    this.isRecordingPayment.set(true);
+    this.clearMessages();
 
-        error: err => {
-
-          this.errorMessage.set(
-            err.error?.message ||
-            'Failed to record payment.'
-          );
-        }
-      });
+    this.http.post(
+      `${this.apiUrl}/rounds/toggle-payment`,
+      {
+        circleId: circle.circleId,
+        roundNumber: circle.currentRoundNumber,
+        memberId
+      }
+    ).subscribe({
+      next: () => {
+        this.successMessage.set('Payment recorded successfully.');
+        this.isRecordingPayment.set(false);
+        this.loadDashboard();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isRecordingPayment.set(false);
+        this.handleApiError(error);
+      }
+    });
   }
 
   payoutCurrentRound(): void {
+    this.errorMessage.set(
+      'Payout is not connected yet. We need to add and verify the payout endpoint in the backend first.'
+    );
+  }
 
-    const c = this.circle();
+  logout(): void {
+    this.authService.logout();
+    window.location.assign('/login');
+  }
 
-    if (!c) {
-      return;
-    }
-
-    if (!this.allPaid()) {
-
-      this.errorMessage.set(
-        'All members must be marked as paid before payout.'
-      );
-
-      return;
-    }
-
+  clearMessages(): void {
     this.errorMessage.set('');
     this.successMessage.set('');
+  }
 
-    this.http
-      .post(
-        `${this.apiUrl}/${c.circleId}/payout`,
-        {}
-      )
-      .subscribe({
-
-        next: () => {
-
-          this.successMessage.set(
-            'Current round paid out successfully.'
-          );
-
-          this.loadCircleDetails();
-        },
-
-        error: err => {
-
-          this.errorMessage.set(
-            err.error?.message ||
-            'Payout could not be completed.'
-          );
-        }
-      });
+  private handleApiError(error: HttpErrorResponse): void {
+    if (error.status === 401) {
+      this.errorMessage.set(
+        'Your session has expired. Please log in again.'
+      );
+    } else if (error.status === 403) {
+      this.errorMessage.set(
+        'You do not have permission to access this dashboard.'
+      );
+    } else if (error.status === 404) {
+      this.errorMessage.set(
+        error.error?.message ?? 'No circle or dashboard data was found.'
+      );
+    } else if (error.status === 0) {
+      this.errorMessage.set(
+        'Cannot connect to the API. Make sure your backend is running on port 5034.'
+      );
+    } else {
+      this.errorMessage.set(
+        error.error?.message ??
+        error.error?.title ??
+        'Something went wrong while loading the dashboard.'
+      );
+    }
   }
 }
